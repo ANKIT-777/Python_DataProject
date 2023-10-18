@@ -30,24 +30,48 @@ sorted_data = {date: dict(sorted(data.items(), key=lambda item: item[1], reverse
 
 years = list(sorted_data.keys())
 activity_year = list(sorted_data.values())
+top_activity_year = {}
 
-# Extract the top 10 activities for the first year (change this as needed)
-top_activities = list(activity_year[0].keys())[:5]
+for year_index, year_activities in enumerate(activity_year):
+    top_activities = list(year_activities)[:5]
+    if years[year_index] not in top_activity_year:
+        top_activity_year[years[year_index]] = top_activities
 
-# Prepare data for the plot
-x = range(len(years))
-width = 0.15
+# Prepare data for the grouped bar chart
+all_activity_names = set()
+for year in top_activity_year:
+    for activity in top_activity_year[year]:
+        all_activity_names.add(activity)
 
-plt.figure(figsize=(15, 6))
+all_activity_names = sorted(all_activity_names)
 
-for i, activity in enumerate(top_activities):
-    activity_counts = [data.get(activity, 0) for data in activity_year]
-    plt.bar([pos + i * width for pos in x], activity_counts, width=width, label=activity)
+bar_data = {}
+for activity in all_activity_names:
+    bar_data[activity] = []
+    for year in top_activity_year:
+        if activity in top_activity_year[year]:
+            bar_data[activity].append(activity_year[years.index(year)][activity])
+        else:
+            bar_data[activity].append(0)
 
-plt.xlabel('Year')
-plt.ylabel('Count')
-plt.title('Top Business Activities in Maharashtra from 2000 to 2010')
-plt.xticks([pos + width * (len(top_activities) / 2) for pos in x], years)
-plt.legend(loc='best', title='Activities',)
+# Set the bar positions
+x = list(range(len(top_activity_year)))
 
+# Create a bar for each activity
+width = 0.10
+fig, ax = plt.subplots()
+
+for i, activity in enumerate(bar_data):
+    ax.bar([pos + width * i for pos in x], bar_data[activity], width=width, label=activity)
+
+# Set the labels and title of the chart
+ax.set_xticks([pos + width * 2 for pos in x])
+ax.set_xticklabels(top_activity_year.keys())
+ax.set_ylabel("Number of Companies")
+ax.set_title("Top 5 Activities in Maharashtra by Number of Companies (2000-2010)")
+
+# Add a legend
+ax.legend(loc='upper right', bbox_to_anchor=(1, 1))
+
+# Show the chart
 plt.show()
