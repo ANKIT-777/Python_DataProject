@@ -1,31 +1,27 @@
-import csv 
+import csv
 import matplotlib.pyplot as plt
 
-with open('IPL/deliveries.csv') as csvfile:
-    DataSet = csv.DictReader(csvfile)
-    
-    Extrarun = {}
-    
-    for row in DataSet:
-        if 577 <= int(row['match_id']) <=636:
-        # Get the bowling team and extra runs for the current row
-            bowling_team = row['bowling_team']
-            extra_runs = int(row['extra_runs'])
 
-            # If the team is not in the dictionary, add it and set the extra runs to 0
-            if bowling_team not in Extrarun:
-                Extrarun[bowling_team] = 0
+def plot_extra_runs(file_path):
+    extra_runs = {}
 
-            # Add the extra runs for the current row to the total for the team
-            Extrarun[bowling_team] += extra_runs
-            
-            
-            
-x = list(Extrarun.values())
-y = list(Extrarun.keys())
+    with open(file_path, newline='') as csvfile:
+        dataset = csv.DictReader(csvfile)
 
-plt.plot(y,x, marker = 'o')
-plt.xticks(rotation=45)
-plt.show()
+        for row in dataset:
+            if 577 <= int(row['match_id']) <= 636:
+                bowling_team = row['bowling_team']
+                extra_runs[bowling_team] = extra_runs.get(bowling_team, 0) + int(row['extra_runs'])
+
+    x, y = extra_runs.keys(), extra_runs.values()
+
+    plt.plot(x, y, marker='o')
+    plt.xticks(rotation=45)
+    plt.xlabel('Bowling Team')
+    plt.ylabel('Extra Runs')
+    plt.title('Extra Runs per Bowling Team in IPL 2023')
+    plt.show()
 
 
+if __name__ == '__main__':
+    plot_extra_runs('IPL/deliveries.csv')
