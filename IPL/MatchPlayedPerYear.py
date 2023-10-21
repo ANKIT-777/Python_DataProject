@@ -1,50 +1,37 @@
 import csv
 import matplotlib.pyplot as plt
 
+def process_and_plot_number_of_matches(matches_csv_path):
+    number_of_matches = {}
 
-Umpires = {}  # Initialize an empty dictionary
-
-with open('IPL/matches.csv', newline='') as csvfile:
-
-    Dataset = csv.DictReader(csvfile)
-
-    for row in Dataset:
-        umpire1 = row['umpire1']
-        umpire2 = row['umpire2']
-        umpire3 = row['umpire3']
+    with open(matches_csv_path, newline='') as csvfile:
+        csv_reader = csv.DictReader(csvfile)
         
-        if umpire1 not in Umpires:
-            Umpires[umpire1] = umpire1
-        if umpire2 not in Umpires:
-            Umpires[umpire2] = umpire2
-        if umpire3 not in Umpires:
-            Umpires[umpire3] = umpire3   
-                        
-            
-with open('IPL/umpires.csv', newline='') as csvfile:  
-    Nation = csv.DictReader(csvfile)  
-    Count_Ump = {}      
-    
-    for row in Nation:
-        umpire = row['umpire']
-        country = row[' country']
-        if country != ' India':
-            if umpire in Umpires and country not in Count_Ump:
-                Count_Ump[country] = 1
+        for row in csv_reader:
+            season = row['season']
+            if season not in number_of_matches:
+                number_of_matches[season] = 1
             else:
-                Count_Ump[country] +=1    
+                number_of_matches[season] += 1
 
+    return number_of_matches
 
+def plot_number_of_matches(number_of_matches):
+   
+    seasons = sorted(number_of_matches.keys())
+    match_counts = [number_of_matches[season] for season in seasons]
+    
+    plt.bar(seasons, match_counts)
+    plt.xlabel('Season')
+    plt.ylabel('Number of Matches')
+    plt.title('Number of Matches Per Season')
+    plt.xticks(rotation=45)
+    plt.show()
 
-x = list(Count_Ump.values())
-lab = list(Count_Ump.keys())
+def main():
+    matches_csv_path = 'IPL/matches.csv'
+    number_of_matches = process_and_plot_number_of_matches(matches_csv_path)
+    plot_number_of_matches(number_of_matches)
 
-
-plt.pie(x,labels=lab,startangle=90)
-plt.show()
-
-
-
-
-
-           
+if __name__ == '__main__':
+    main()
